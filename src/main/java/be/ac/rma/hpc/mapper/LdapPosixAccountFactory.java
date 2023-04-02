@@ -54,7 +54,7 @@ public class LdapPosixAccountFactory extends AbstractLDAPStorageMapperFactory im
 
     @Override
     public String getHelpText() {
-        return "Used to assign an auto-incrementing POSIX account UID number (LDAP attribute uidNumber) to newly created LDAP users.";
+        return "Used to assign an auto-incrementing POSIX account UID number (LDAP attribute uidNumber) to newly created LDAP users. Also sets homeDirectory to /home/username.";
     }
 
     @Override

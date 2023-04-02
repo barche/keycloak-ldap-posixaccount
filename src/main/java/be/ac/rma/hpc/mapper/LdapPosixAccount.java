@@ -23,6 +23,7 @@ import org.keycloak.storage.ldap.idm.model.LDAPObject;
 import org.keycloak.storage.ldap.idm.query.internal.LDAPQuery;
 import org.keycloak.storage.ldap.mappers.AbstractLDAPStorageMapper;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -33,6 +34,7 @@ public class LdapPosixAccount extends AbstractLDAPStorageMapper {
     private static final Logger logger = Logger.getLogger(LdapPosixAccount.class);
     public static final String LDAP_NEXT_UID = "ldap.next.uid";
     public static final String LDAP_POSIX_UID_ATTRIBUTE_NAME = "uidNumber";
+    public static final String LDAP_POSIX_HOME_ATTRIBUTE_NAME = "homeDirectory";
 
     public LdapPosixAccount(ComponentModel mapperModel, LDAPStorageProvider ldapProvider) {
         super(mapperModel, ldapProvider);
@@ -49,12 +51,17 @@ public class LdapPosixAccount extends AbstractLDAPStorageMapper {
     public void onRegisterUserToLDAP(LDAPObject ldapUser, UserModel localUser, RealmModel realm) {
         logger.warn("storing ldap user" + ldapUser.toString());
         ldapUser.setSingleAttribute(LDAP_POSIX_UID_ATTRIBUTE_NAME, getUid());
+        String username = localUser.getUsername();
+        ldapUser.setSingleAttribute(LDAP_POSIX_HOME_ATTRIBUTE_NAME, "/home/" + username);
         updateUid(realm);
     }
 
     @Override
     public Set<String> mandatoryAttributeNames() {
-        return Collections.singleton(LDAP_POSIX_UID_ATTRIBUTE_NAME);
+        Set<String> names =  new LinkedHashSet<String>();
+        names.add(LDAP_POSIX_UID_ATTRIBUTE_NAME);
+        names.add(LDAP_POSIX_HOME_ATTRIBUTE_NAME);
+        return names;
     }
 
     @Override
