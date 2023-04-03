@@ -44,12 +44,11 @@ public class LdapPosixAccount extends AbstractLDAPStorageMapper {
     public void onImportUserFromLDAP(LDAPObject ldapUser, UserModel user, RealmModel realm, boolean isCreate) {
         // We don't do anything here, if propagation from LDAP to KeyCloak is needed then it should be done using 
         // the standard UserAttributeLDAPStorageMapper
-        logger.warn("importing ldap user" + ldapUser.toString());
     }
 
     @Override
     public void onRegisterUserToLDAP(LDAPObject ldapUser, UserModel localUser, RealmModel realm) {
-        logger.warn("storing ldap user" + ldapUser.toString());
+        logger.debug("Adding ldap user" + ldapUser.toString());
         ldapUser.setSingleAttribute(LDAP_POSIX_UID_ATTRIBUTE_NAME, getUid());
         String username = localUser.getUsername();
         ldapUser.setSingleAttribute(LDAP_POSIX_HOME_ATTRIBUTE_NAME, "/home/" + username);
