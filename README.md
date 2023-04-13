@@ -7,6 +7,7 @@ This is a Keycloak extension to automatically increment the POSIX account UID nu
 Run the maven package command:
 
 ```bash
+mvn compile
 mvn package
 ```
 
