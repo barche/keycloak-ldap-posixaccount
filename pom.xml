@@ -6,13 +6,13 @@
 
     <groupId>be.ac.rma.hpc</groupId>
     <artifactId>ldap-posixaccount</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <keycloak.version>26.0.1</keycloak.version>
+        <keycloak.version>26.0.2</keycloak.version>
     </properties>
 
     <dependencies>
