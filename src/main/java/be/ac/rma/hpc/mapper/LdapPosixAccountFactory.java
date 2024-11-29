@@ -48,13 +48,24 @@ public class LdapPosixAccountFactory extends AbstractLDAPStorageMapperFactory im
                 .label("Next POSIX UID")
                 .helpText("Value for the POSIX UID number for the next new user. This should not refer to any existing user and will be incremented automatically with each newly added user.")
                 .type(ProviderConfigProperty.STRING_TYPE)
-                .add();
+                .add()
+                .property().name(LdapPosixAccount.LDAP_DEFAULT_GID)
+                .label("Fixed POSIX GID")
+                .helpText("Value for the POSIX GID number for the new user. If set to 0, this mapper won' add GID, if set to non-zero value all users will be given this GID. If unset, user will get GID=UID")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .add()
+                .property().name(LdapPosixAccount.LDAP_HOME_BASE)
+                .label("Home basedir")
+                .helpText("Basedir to be combined with username (default is " + LdapPosixAccount.LDAP_DEFAULT_HOME_BASEDIR + ")")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .add()
+                ;
         return config.build();
     }
 
     @Override
     public String getHelpText() {
-        return "Used to assign an auto-incrementing POSIX account UID number (LDAP attribute uidNumber) to newly created LDAP users. Also sets homeDirectory to /home/username.";
+        return "Used to assign an auto-incrementing POSIX account UID number (LDAP attribute uidNumber) to newly created LDAP users. Also sets homeDirectory to e.g. /home/username and optionally GID (LDAP gidNumber). To work properly user should be mapped to a proper object class (posixAccount).";
     }
 
     @Override

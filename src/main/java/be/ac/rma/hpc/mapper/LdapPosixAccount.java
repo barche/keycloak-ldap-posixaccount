@@ -22,7 +22,6 @@ import org.keycloak.storage.ldap.LDAPStorageProvider;
 import org.keycloak.storage.ldap.idm.model.LDAPObject;
 import org.keycloak.storage.ldap.idm.query.internal.LDAPQuery;
 import org.keycloak.storage.ldap.mappers.AbstractLDAPStorageMapper;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,8 +31,12 @@ import java.util.Set;
 public class LdapPosixAccount extends AbstractLDAPStorageMapper {
 
     private static final Logger logger = Logger.getLogger(LdapPosixAccount.class);
+    public static final String LDAP_DEFAULT_HOME_BASEDIR = "/home/";
     public static final String LDAP_NEXT_UID = "ldap.next.uid";
+    public static final String LDAP_HOME_BASE = "ldap.home.base";
+    public static final String LDAP_DEFAULT_GID = "ldap.default.gid";
     public static final String LDAP_POSIX_UID_ATTRIBUTE_NAME = "uidNumber";
+    public static final String LDAP_POSIX_GID_ATTRIBUTE_NAME = "gidNumber";
     public static final String LDAP_POSIX_HOME_ATTRIBUTE_NAME = "homeDirectory";
 
     public LdapPosixAccount(ComponentModel mapperModel, LDAPStorageProvider ldapProvider) {
@@ -48,10 +51,19 @@ public class LdapPosixAccount extends AbstractLDAPStorageMapper {
 
     @Override
     public void onRegisterUserToLDAP(LDAPObject ldapUser, UserModel localUser, RealmModel realm) {
-        logger.debug("Adding ldap user" + ldapUser.toString());
-        ldapUser.setSingleAttribute(LDAP_POSIX_UID_ATTRIBUTE_NAME, getUid());
+        logger.debug("Adding ldap user " + ldapUser.toString());
+        String uId = getUid();
+        ldapUser.setSingleAttribute(LDAP_POSIX_UID_ATTRIBUTE_NAME, uId);
+        String gId = mapperModel.getConfig().getFirst(LDAP_DEFAULT_GID);
+        if(gId == null || gId.isEmpty())
+        	gId = uId;
+        if(!"0".equals(gId))
+        	ldapUser.setSingleAttribute(LDAP_POSIX_GID_ATTRIBUTE_NAME, gId);
         String username = localUser.getUsername();
-        ldapUser.setSingleAttribute(LDAP_POSIX_HOME_ATTRIBUTE_NAME, "/home/" + username);
+        String basedir = mapperModel.getConfig().getFirst(LDAP_HOME_BASE);
+        if(basedir==null || basedir.isEmpty())
+        	basedir = LDAP_DEFAULT_HOME_BASEDIR;
+        ldapUser.setSingleAttribute(LDAP_POSIX_HOME_ATTRIBUTE_NAME, basedir + username);
         updateUid(realm);
     }
 
@@ -59,7 +71,6 @@ public class LdapPosixAccount extends AbstractLDAPStorageMapper {
     public Set<String> mandatoryAttributeNames() {
         Set<String> names =  new LinkedHashSet<String>();
         names.add(LDAP_POSIX_UID_ATTRIBUTE_NAME);
-        names.add(LDAP_POSIX_HOME_ATTRIBUTE_NAME);
         return names;
     }
 
